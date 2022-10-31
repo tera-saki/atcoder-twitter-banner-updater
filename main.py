@@ -30,17 +30,13 @@ def main():
         if contest is None:
             return
         result = crawler.get_contest_result(contest)
-        if result.get("IsRated") is not True:
+        if result is None or result["IsRated"] is False:
             return
         crawler.wait_rating_update(result)
         update_banner()
         logger.info("updated banner image successfully!")
 
-
 try:
     main()
 except Exception:
     traceback.print_exc()
-
-
-
