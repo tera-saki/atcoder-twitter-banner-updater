@@ -1,4 +1,6 @@
+"""Implemention of logger"""
 import logging
+
 
 def get_logger(name: str):
     """return logger"""

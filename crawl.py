@@ -1,3 +1,4 @@
+"""implemetion of crawler class"""
 import os
 import re
 from time import sleep
@@ -16,8 +17,6 @@ from logger import get_logger
 
 class Crawler:
     """crawler class"""
-
-    CONTEST_SHORT_NAME = ["ABC", "ARC", "AGC"]
 
     def __init__(self, username: str):
         self.username = username
@@ -55,18 +54,19 @@ class Crawler:
         return WebDriverWait(self.driver, timeout=timeout) \
             .until(lambda d: d.find_element(By.XPATH, xpath))
 
-    def get_today_contest(self, contest_type: int) -> str | None:
+    def get_today_contest(self, contest_type: str) -> str | None:  # pylint: disable=too-many-locals
         """
         if the contest of specified type was held today, return the id of that contest.
         otherwise, return None.
 
         Args:
-            contest_type (int): 1: ABC, 2: ARC, 3: AGC
+            contest_type (str): abc, arc or agc
 
         Returns:
             str | None: contest id (e.g. abc 123)
         """
-        url = f"https://atcoder.jp/contests/archive?ratedType={contest_type}"
+        rated_type = {"abc": 1, "arc": 2, "agc": 3}[contest_type]
+        url = f"https://atcoder.jp/contests/archive?ratedType={rated_type}"
         self.driver.get(url)
 
         tbody = self._find_element_by_tag("tbody")
@@ -80,9 +80,9 @@ class Crawler:
         today = date.today().isoformat()
         duration = _duration.text
         if duration >= "03:00":
-            today -= timedelta(days=1)
+            today = (date.fromisoformat(today) - timedelta(days=1)).isoformat()
         if contest_day != today:
-            self.logger.info("There was no %s today.", self.CONTEST_SHORT_NAME[contest_type - 1])
+            self.logger.info("There was no %s today.", contest_type.upper())
             return None
 
         contest_url = _contest_name.find_element(By.TAG_NAME, "a").get_attribute('href')
@@ -131,7 +131,6 @@ class Crawler:
                 self.logger.info("rating changes detected.")
                 break
             sleep(interval)
-
 
     def take_screenshot(self) -> None:
         """
