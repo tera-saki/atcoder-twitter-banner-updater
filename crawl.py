@@ -90,10 +90,11 @@ class Crawler:
         self.logger.info("There was %s today!", contest_id)
         return contest_id
 
-    def get_contest_result(self, contest_id: str) -> dict | None:
+    def get_contest_result(self, contest_id: str, interval: int = 60) -> dict | None:
         """
         return your result of the specified contest.
-        if your data was not found, return None.
+        if result is not yet available, wait until the they are.
+        if your data was not found in the result, return None.
 
         Args:
             contest_id (str): contest id (e.g. abc123)
@@ -102,7 +103,13 @@ class Crawler:
             dict | None: your contest result
         """
         url = f"https://atcoder.jp/contests/{contest_id}/results/json"
-        results = requests.get(url, timeout=60).json()
+        self.logger.info("waiting for the result...")
+        while True:
+            results = requests.get(url, timeout=60).json()
+            if results:
+                break
+            sleep(interval)
+
         for res in results:
             if res["UserName"] == self.username:
                 self.logger.info("found your record in the standings.")

@@ -54,6 +54,7 @@ def run(contest_type: str) -> None:
         if result is None or result["IsRated"] is False:
             return
         crawler.wait_rating_update(result)
+        crawler.take_screenshot()
         update_banner()
         logger.info("updated banner image successfully!")
         if webhook_url is not None:
