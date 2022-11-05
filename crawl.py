@@ -93,8 +93,8 @@ class Crawler:
     def get_contest_result(self, contest_id: str, interval: int = 60) -> dict | None:
         """
         return your result of the specified contest.
-        if result is not yet available, wait until the they are.
-        if your data was not found in the result, return None.
+        if result is not yet available, wait until they are.
+        if your data is not found in the result, return None.
 
         Args:
             contest_id (str): contest id (e.g. abc123)
