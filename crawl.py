@@ -40,6 +40,7 @@ class Crawler:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--window-size=1920,1080')
+        options.add_argument('--lang=ja')
         self.driver = webdriver.Chrome(options=options)
 
     def _find_element_by_tag(self, tag: str, timeout: int = 10):

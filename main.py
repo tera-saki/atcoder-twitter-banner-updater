@@ -27,6 +27,7 @@ api = tweepy.API(auth)
 img_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "img")
 
 webhook_url = config.get("slack", "webhook_url")
+twitter_username = config.get("twitter", "username")
 
 
 def update_banner() -> None:
@@ -38,10 +39,20 @@ def update_banner() -> None:
         img_path, height=height/2, width=width, offset_top=0, offset_left=0)
 
 
+def get_banner_url() -> str:
+    """return url of the banner"""
+    ret = api.get_profile_banner(screen_name=twitter_username)
+    return ret["sizes"]["1500x500"]["url"]
+
+
 def notify_with_webhook() -> None:
     """send notification to slack"""
     client = WebhookClient(webhook_url)
-    client.send(text="banner image was updated.")
+    if twitter_username is not None:
+        banner_url = get_banner_url()
+        client.send(text=f"banner image was updated.\n{banner_url}")
+    else:
+        client.send(text="banner image was updated.")
 
 
 def run(contest_type: str) -> None:
