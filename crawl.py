@@ -95,7 +95,7 @@ class Crawler:
         self.logger.info("There was %s today!", contest_id)
         return contest_id
 
-    def get_contest_result(self, contest_id: str, interval: int = 20) -> dict | None:
+    def get_contest_result(self, contest_id: str, interval: int = 10) -> dict | None:
         """
         return your result of the specified contest.
         if result is not yet available, wait until they are.
