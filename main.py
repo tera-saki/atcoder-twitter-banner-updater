@@ -45,6 +45,11 @@ def get_banner_url() -> str:
     return ret["sizes"]["1500x500"]["url"]
 
 
+def post_tweet(result: str) -> None:
+    """share the contest result"""
+    api.update_status(result)
+
+
 def notify_with_webhook() -> None:
     """send notification to slack"""
     client = WebhookClient(webhook_url)
@@ -68,6 +73,11 @@ def run(contest_type: str) -> None:
         crawler.take_screenshot()
         update_banner()
         logger.info("updated banner image successfully!")
+
+        share_result = crawler.get_share_result(contest)
+        post_tweet(share_result)
+        logger.info("posted tweet successfully!")
+
         if webhook_url is not None:
             notify_with_webhook()
 

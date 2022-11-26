@@ -43,6 +43,10 @@ class Crawler:
         options.add_argument('--lang=ja')
         self.driver = webdriver.Chrome(options=options)
 
+    def _find_element_by_class(self, klass: str, timeout: int = 10):
+        return WebDriverWait(self.driver, timeout=timeout) \
+            .until(lambda d: d.find_element(By.CLASS_NAME, klass))
+
     def _find_element_by_tag(self, tag: str, timeout: int = 10):
         return WebDriverWait(self.driver, timeout=timeout) \
             .until(lambda d: d.find_element(By.TAG_NAME, tag))
@@ -163,3 +167,20 @@ class Crawler:
         img = cv2.vconcat([img_status, img_graph])
         cv2.imwrite(file_banner, img)
         self.logger.info("screenshot was saved.")
+
+    def get_share_result(self, contest_id: str) -> str:
+        """return result to share
+
+        Args:
+            contest_id (str): contest id
+
+        Returns:
+            str: result to share
+        """
+        url = f"https://atcoder.jp/users/{self.username}/history/share/{contest_id}"
+        self.driver.get(url)
+        sleep(1)
+
+        ele = self._find_element_by_class("a2a_kit")
+        text = ele.get_attribute("data-a2a-title")
+        return ''.join([text, url])
